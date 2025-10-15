@@ -1,0 +1,11 @@
+model: Qwen/Qwen3-0.6B
+layer: 14          # mid-layer in 0..27
+last_n: 16
+contrast: plausibility
+alpha_search:
+  min: 1.0
+  max: 2.0
+  steps: 9
+alpha: 1.0         # re-search this; 1.0 is just a starting guess
+data_dir: data/
+artifacts_dir: artifacts/
