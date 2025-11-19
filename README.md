@@ -70,6 +70,10 @@ configs/
   base.yaml              # default config (editable)
 tests/
   test_shapes.py         # sanity-checks
+
+## Experiment Tracking
+
+Midterm and end-term steering runs are logged in `results/experiment_log.md`. Each entry records the exact commands, vector files, and metrics (accuracy plus content-effect breakdowns) for the evaluated models. Update that file whenever you run `scripts/search_alpha.py` or `scripts/evaluate.py` so future comparisons remain reproducible.
 ```
 
 ## Data

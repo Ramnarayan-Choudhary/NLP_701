@@ -1,0 +1,6 @@
+{
+  "accuracy": 0.5,
+  "intra_plausibility": 1.0,
+  "cross_plausibility": 0.0,
+  "total_content_effect": 0.5
+}

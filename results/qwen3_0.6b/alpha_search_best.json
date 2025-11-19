@@ -1,0 +1,13 @@
+{
+  "model": "Qwen/Qwen3-0.6B",
+  "layer": 16,
+  "last_n": 32,
+  "best": {
+    "alpha": -3.0,
+    "score": 0.9791647083372499,
+    "accuracy": 0.4895833333333333,
+    "intra_plausibility": 1.0,
+    "cross_plausibility": 0.0,
+    "total_content_effect": 0.5
+  }
+}
