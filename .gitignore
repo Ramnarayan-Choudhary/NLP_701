@@ -159,3 +159,4 @@ logs/
 # Temporary files
 *.tmp
 *.temp
+wandb/
