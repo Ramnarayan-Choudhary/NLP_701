@@ -1,8 +1,9 @@
 import json
 import os
-from dataclasses import dataclass
-from typing import List, Dict, Any, Tuple
 import random
+from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
 
 @dataclass
 class Example:
@@ -51,8 +52,51 @@ class SemevalDataset:
         return exs
 
     def train_valid_split(self, seed: int = 42, valid_frac: float = 0.2) -> Tuple[list[Example], list[Example]]:
+        """Stratified split on (validity, plausibility) so runs stay comparable across users."""
+        if not 0 < valid_frac < 1:
+            raise ValueError(f"valid_frac must be between 0 and 1, got {valid_frac}")
+
+        train_ratio = 1.0 - valid_frac
         rng = random.Random(seed)
-        exs = self.examples[:]
-        rng.shuffle(exs)
-        n_valid = int(len(exs) * valid_frac)
-        return exs[n_valid:], exs[:n_valid]
+        buckets: dict[tuple[bool, bool], list[Example]] = defaultdict(list)
+        for ex in self.examples:
+            key = (bool(ex.validity), bool(ex.plausibility))
+            buckets[key].append(ex)
+
+        train, valid = [], []
+        for key in sorted(buckets.keys()):
+            group = buckets[key]
+            if not group:
+                continue
+            rng.shuffle(group)
+            n_train = max(1, int(len(group) * train_ratio))
+            train.extend(group[:n_train])
+            valid.extend(group[n_train:])
+
+        rng.shuffle(train)
+        rng.shuffle(valid)
+        return train, valid
+
+
+def stratified_split_examples(examples: List[Example], train_ratio: float, seed: int = 42) -> Tuple[list[Example], list[Example]]:
+    """Standalone stratified split helper mirroring split_dataset.py logic."""
+    if not 0 < train_ratio < 1:
+        raise ValueError(f"train_ratio must be between 0 and 1, got {train_ratio}")
+    rng = random.Random(seed)
+    buckets: dict[tuple[bool, bool], list[Example]] = defaultdict(list)
+    for ex in examples:
+        buckets[(bool(ex.validity), bool(ex.plausibility))].append(ex)
+
+    train, test = [], []
+    for key in sorted(buckets.keys()):
+        group = buckets[key]
+        if not group:
+            continue
+        rng.shuffle(group)
+        n_train = max(1, int(len(group) * train_ratio))
+        train.extend(group[:n_train])
+        test.extend(group[n_train:])
+
+    rng.shuffle(train)
+    rng.shuffle(test)
+    return train, test

@@ -46,6 +46,8 @@ python scripts/evaluate.py --model Qwen/Qwen3-0.6B --data_dir data/ \
 - Steering is applied **at the output of a chosen transformer block** and only on the final portion of the prompt (default: last 32 tokens), right **before** classifying `VALID` vs `INVALID`.
 - The `compute_vectors.py` script builds a **contrastive direction** using the dataset labels (plausibility), averaged at the chosen layer/position.
 - The `search_alpha.py` script performs a grid-search that **balances** accuracy against total content effect (configurable objective).
+- The `evaluate.py` script now supports **dynamic α scheduling** (`--alpha-mode dynamic_margin`), which first measures baseline confidence (logit margin) per syllogism and then scales the steering strength within user-defined bounds. This yields stronger steering on ambiguous cases and lighter touch when the model is already confident.
+- To reduce entanglement with unrelated global directions, `compute_vectors.py` supports `--mean-center`, which subtracts the corpus-wide activation mean before building the contrastive vector. Try this when a raw vector increases content effect more than it helps accuracy.
 
 ---
 
@@ -74,6 +76,49 @@ tests/
 ## Experiment Tracking
 
 Midterm and end-term steering runs are logged in `results/experiment_log.md`. Each entry records the exact commands, vector files, and metrics (accuracy plus content-effect breakdowns) for the evaluated models. Update that file whenever you run `scripts/search_alpha.py` or `scripts/evaluate.py` so future comparisons remain reproducible.
+
+### Live dashboards with Weights & Biases
+
+All CLI entry points (`compute_vectors.py`, `search_alpha.py`, `evaluate.py`) now have first-class [Weights & Biases](https://wandb.ai/) hooks so you can watch training curves, alpha sweeps, and evaluation breakdowns live:
+
+1. Install & authenticate once per machine:
+   ```bash
+   pip install wandb
+   wandb login
+   ```
+2. Pass `--wandb-mode online` (or `offline`) plus your project when launching any script. Examples:
+   ```bash
+   # Vector extraction with prompt previews + artifact upload
+   python scripts/compute_vectors.py \
+     --model Qwen/Qwen3-0.6B --data_dir data/ --layer 16 --last_n 32 \
+     --contrast plausibility --out_dir artifacts/ \
+     --wandb-mode online --wandb-project its-demo \
+     --wandb-run-name vector-l16 --wandb-log-prompts 10 \
+     --wandb-upload-vector
+
+   # Alpha search sweep logged as a table/line chart
+   python scripts/search_alpha.py \
+     --model Qwen/Qwen3-0.6B --data_dir data/ \
+     --vector_path artifacts/plausibility_layer16_last32.pt \
+     --layer 16 --last_n 32 --alpha_min -2 --alpha_max 2 --alpha_steps 25 \
+     --wandb-mode online --wandb-project its-demo --wandb-run-name alpha-scan
+
+   # Final evaluation with confusion matrix + prediction preview
+   python scripts/evaluate.py \
+     --model Qwen/Qwen3-0.6B --data_dir data/ \
+     --vector_path artifacts/plausibility_layer16_last32.pt \
+     --layer 16 --alpha 1.25 --eval_on rest \
+     --wandb-mode online --wandb-project its-demo \
+     --wandb-run-name eval-rest --wandb-log-predictions 50
+   ```
+
+Shared CLI knobs:
+
+- `--wandb-project / --wandb-entity / --wandb-run-name / --wandb-group / --wandb-tags / --wandb-notes`
+- `--wandb-mode {online,offline,disabled}` controls whether logging is active (default: `disabled`).
+- Script-specific helpers: `--wandb-log-prompts` & `--wandb-upload-vector` (vector extraction), `--wandb-log-table` (alpha sweep tables), `--wandb-log-predictions` (evaluation previews).
+- When artifact flags are enabled, steering vectors and submission-ready predictions are versioned automatically inside the W&B UI for later download.
+- Dynamic α options: `--alpha-mode dynamic_margin` together with `--dynamic-target-margin`, `--dynamic-min-alpha`, `--dynamic-max-alpha`, and `--dynamic-margin-eps` lets you customize how the steering strength adapts based on baseline confidence.
 ```
 
 ## Data

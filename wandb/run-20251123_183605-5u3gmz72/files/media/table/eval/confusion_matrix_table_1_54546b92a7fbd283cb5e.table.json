@@ -1,0 +1,1 @@
+{"columns": ["Actual", "Predicted", "nPredictions"], "data": [["INVALID", "INVALID", 30.0], ["INVALID", "VALID", 17.0], ["VALID", "INVALID", 5.0], ["VALID", "VALID", 43.0]]}

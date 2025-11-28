@@ -1,0 +1,114 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            gbsfdjt92s93f9eq7avqwxwlano31uu9:
+                args:
+                    - --model
+                    - Qwen/Qwen3-4B
+                    - --data_dir
+                    - data/train.jsonl
+                    - --vector_path
+                    - artifacts/plausibility_layer16_last32.pt
+                    - --layer
+                    - "16"
+                    - --last_n
+                    - "32"
+                    - --alpha
+                    - "1.25"
+                    - --eval_on
+                    - rest
+                    - --alpha-mode
+                    - dynamic_margin
+                    - --dynamic-target-margin
+                    - "1.5"
+                    - --dynamic-min-alpha
+                    - "0.2"
+                    - --dynamic-max-alpha
+                    - "2.5"
+                    - --wandb-mode
+                    - online
+                    - --wandb-project
+                    - semeval-task11
+                    - --wandb-run-name
+                    - qwen3-4b-dynalpha
+                    - --wandb-tags
+                    - qwen3-4b
+                    - dyn-alpha
+                    - --wandb-log-predictions
+                    - "50"
+                codePath: scripts/evaluate.py
+                codePathLocal: scripts/evaluate.py
+                cpu_count: 192
+                cpu_count_logical: 384
+                disk:
+                    /:
+                        total: "1073741824"
+                        used: "46190592"
+                email: choudharyramnarayan123@gmail.com
+                executable: /home/ramnarayan.ramniwas/anaconda3/bin/python
+                git:
+                    commit: 98fe35d75ba369f8f8defbd16aa476eb9bc74fb0
+                    remote: https://github.com/Ramnarayan-Choudhary/NLP_701.git
+                host: lo-02
+                memory:
+                    total: "1622782988288"
+                os: Linux-5.15.173-ql-generic-13.0-17-x86_64-with-glibc2.35
+                program: /home/ramnarayan.ramniwas/MS_projects/NLP_701/scripts/evaluate.py
+                python: CPython 3.10.9
+                root: /home/ramnarayan.ramniwas/MS_projects/NLP_701
+                startedAt: "2025-11-19T18:08:40.223516Z"
+                writerId: gbsfdjt92s93f9eq7avqwxwlano31uu9
+        m: []
+        python_version: 3.10.9
+        t:
+            "1":
+                - 1
+                - 5
+                - 11
+                - 49
+                - 53
+                - 71
+                - 105
+            "2":
+                - 1
+                - 5
+                - 11
+                - 49
+                - 53
+                - 71
+                - 105
+            "3":
+                - 2
+                - 13
+                - 15
+                - 16
+            "4": 3.10.9
+            "5": 0.23.0
+            "6": 4.57.1
+            "12": 0.23.0
+            "13": linux-x86_64
+alpha:
+    value: 1.25
+data_dir:
+    value: data/train.jsonl
+eval_examples:
+    value: 768
+eval_on:
+    value: rest
+last_n:
+    value: 32
+layer:
+    value: 16
+model:
+    value: Qwen/Qwen3-4B
+seed:
+    value: 42
+total_examples:
+    value: 960
+valid_frac:
+    value: 0.2
+vector_dim:
+    value: 3072
+vector_path:
+    value: artifacts/plausibility_layer16_last32.pt
